@@ -15,19 +15,52 @@
       html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; touch-action: none; background: #000; color: #fff; }
       main { position: fixed; inset: 0; isolation: isolate; background: #000; }
       canvas { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; }
-      .mark {
+      .mark-shell {
         position: absolute;
         z-index: 4;
         left: 32vw;
         top: 50%;
         width: clamp(220px, 25vw, 390px);
-        height: auto;
-        display: block;
+        aspect-ratio: 566 / 394;
         transform: translate3d(-50%, -50%, 0);
         color: #fff;
-        shape-rendering: geometricPrecision;
-        filter: drop-shadow(0 0 16px rgba(255, 255, 255, .18));
         pointer-events: none;
+      }
+      .mark-layer {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        fill: currentColor;
+        shape-rendering: geometricPrecision;
+      }
+      .mark-base { filter: drop-shadow(0 0 16px rgba(255, 255, 255, .18)); }
+      .mark-echo {
+        opacity: 0;
+        filter: brightness(1.08);
+        animation: fragmented-echo 6.8s steps(1, end) infinite;
+      }
+      .mark-echo--top { clip-path: polygon(0 0, 100% 0, 100% 29%, 0 36%); }
+      .mark-echo--middle {
+        clip-path: polygon(0 31%, 100% 25%, 100% 67%, 0 72%);
+        animation-delay: 55ms;
+      }
+      .mark-echo--bottom {
+        clip-path: polygon(0 69%, 100% 63%, 100% 100%, 0 100%);
+        animation-delay: 110ms;
+      }
+      @keyframes fragmented-echo {
+        0%, 10%, 19%, 31%, 41%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
+        11% { opacity: .7; transform: translate3d(-5.5%, .5%, 0) scale(1.01); }
+        12% { opacity: .3; transform: translate3d(4%, -.5%, 0) scale(.995); }
+        13% { opacity: 0; }
+        32% { opacity: .55; transform: translate3d(4.5%, 0, 0) scale(1.008); }
+        33% { opacity: .2; transform: translate3d(-3%, .3%, 0) scale(1); }
+        34% { opacity: 0; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mark-echo { animation: none; opacity: 0; }
       }
       .manifesto {
         position: absolute;
@@ -56,7 +89,7 @@
         pointer-events: none;
       }
       @media (max-width: 700px) {
-        .mark {
+        .mark-shell {
           left: 8vw;
           top: 11svh;
           width: clamp(140px, 38vw, 210px);
@@ -86,14 +119,12 @@
   <body>
     <main>
       <canvas id="visual" aria-hidden="true"></canvas>
-      <svg class="mark" viewBox="0 0 566 394" role="img" aria-label="X-QLUSIVE">
-        <title>X-QLUSIVE</title>
-        <g fill="currentColor">
-          <path d="M0 0h145l215 197-215 197H0l212-196L0 0Z" />
-          <path d="M418 0h148L397 158l-76-68L418 0Z" />
-          <path d="M394 235l172 159H418l-98-91 74-68Z" />
-        </g>
-      </svg>
+      <div class="mark-shell" role="img" aria-label="X-QLUSIVE">
+        <svg class="mark-layer mark-base" viewBox="0 0 566 394" aria-hidden="true"><g><path d="M0 0h145l215 197-215 197H0l212-196L0 0Z" /><path d="M418 0h148L397 158l-76-68L418 0Z" /><path d="M394 235l172 159H418l-98-91 74-68Z" /></g></svg>
+        <svg class="mark-layer mark-echo mark-echo--top" viewBox="0 0 566 394" aria-hidden="true"><g><path d="M0 0h145l215 197-215 197H0l212-196L0 0Z" /><path d="M418 0h148L397 158l-76-68L418 0Z" /><path d="M394 235l172 159H418l-98-91 74-68Z" /></g></svg>
+        <svg class="mark-layer mark-echo mark-echo--middle" viewBox="0 0 566 394" aria-hidden="true"><g><path d="M0 0h145l215 197-215 197H0l212-196L0 0Z" /><path d="M418 0h148L397 158l-76-68L418 0Z" /><path d="M394 235l172 159H418l-98-91 74-68Z" /></g></svg>
+        <svg class="mark-layer mark-echo mark-echo--bottom" viewBox="0 0 566 394" aria-hidden="true"><g><path d="M0 0h145l215 197-215 197H0l212-196L0 0Z" /><path d="M418 0h148L397 158l-76-68L418 0Z" /><path d="M394 235l172 159H418l-98-91 74-68Z" /></g></svg>
+      </div>
       <span class="separator" aria-hidden="true"></span>
       <p class="manifesto">Creating the Global Platform for Arts, Entertainment and Nightlife.</p>
       <footer>©2026 X-QLUSIVE GROUP. All Rights Reserved.</footer>
