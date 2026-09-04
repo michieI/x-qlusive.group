@@ -39,25 +39,30 @@
       .mark-echo {
         opacity: 0;
         filter: brightness(1.08);
-        animation: fragmented-echo 6.8s steps(1, end) infinite;
+
       }
       .mark-echo--top { clip-path: polygon(0 0, 100% 0, 100% 29%, 0 36%); }
       .mark-echo--middle {
         clip-path: polygon(0 31%, 100% 25%, 100% 67%, 0 72%);
-        animation-delay: 55ms;
+        animation-delay: 22ms;
       }
       .mark-echo--bottom {
         clip-path: polygon(0 69%, 100% 63%, 100% 100%, 0 100%);
-        animation-delay: 110ms;
+        animation-delay: 44ms;
       }
-      @keyframes fragmented-echo {
-        0%, 10%, 19%, 31%, 41%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
-        11% { opacity: .7; transform: translate3d(-5.5%, .5%, 0) scale(1.01); }
-        12% { opacity: .3; transform: translate3d(4%, -.5%, 0) scale(.995); }
-        13% { opacity: 0; }
-        32% { opacity: .55; transform: translate3d(4.5%, 0, 0) scale(1.008); }
-        33% { opacity: .2; transform: translate3d(-3%, .3%, 0) scale(1); }
-        34% { opacity: 0; }
+      .mark-shell.is-glitching .mark-echo {
+        animation-name: fragmented-echo-sync;
+        animation-duration: 420ms;
+        animation-timing-function: steps(1, end);
+        animation-iteration-count: 1;
+      }
+      @keyframes fragmented-echo-sync {
+        0%, 7%, 34%, 55%, 82%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
+        8% { opacity: .7; transform: translate3d(-5.5%, .5%, 0) scale(1.01); }
+        20% { opacity: .3; transform: translate3d(4%, -.5%, 0) scale(.995); }
+        35% { opacity: 0; }
+        56% { opacity: .55; transform: translate3d(4.5%, 0, 0) scale(1.008); }
+        70% { opacity: .2; transform: translate3d(-3%, .3%, 0) scale(1); }
       }
       @media (prefers-reduced-motion: reduce) {
         .mark-echo { animation: none; opacity: 0; }
@@ -132,6 +137,7 @@
     <script>
       (() => {
         const canvas = document.getElementById('visual');
+        const markShell = document.querySelector('.mark-shell');
         const ctx = canvas.getContext('2d', { alpha: false });
         const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
         const streaks = [];
@@ -142,6 +148,7 @@
         let elapsed = 0;
         let nextCluster = 180;
         let quietUntil = 0;
+        let logoGlitchTimer = 0;
 
         function resize() {
           const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -153,7 +160,17 @@
           if (reduceMotion.matches) drawStill();
         }
 
+        function triggerLogoGlitch() {
+          if (reduceMotion.matches || !markShell) return;
+          clearTimeout(logoGlitchTimer);
+          markShell.classList.remove('is-glitching');
+          void markShell.offsetWidth;
+          markShell.classList.add('is-glitching');
+          logoGlitchTimer = setTimeout(() => markShell.classList.remove('is-glitching'), 520);
+        }
+
         function spawnCluster() {
+          triggerLogoGlitch();
           const fromLeft = Math.random() < .52;
           const edgeBiased = Math.random() < .72;
           const y = Math.random() * height;
